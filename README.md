@@ -1,5 +1,7 @@
 # ResMon: live sensor screens for the HYTE Y70 Touch
 
+![ResMon on the HYTE Y70 Touch: the Weather, System, Gaming, Music and Settings pages, and the light theme](docs/preview.png)
+
 This adapts [biltrex/lconnect-screen-template](https://github.com/biltrex/lconnect-screen-template) to the
 HYTE Y70 Touch display. That project turns HTML designs into L-Connect 3 templates, but L-Connect only drives
 Lian Li screens. The Y70 Touch is an ordinary Windows monitor (1100×3840 portrait), so here the HTML designs are
