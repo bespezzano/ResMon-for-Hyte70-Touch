@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<!-- Clock + weather page for the HYTE Y70 Touch (1100x3840 portrait). Same look as home.html.
+     Weather slots (WX_*) are filled by the Rainmeter skin from Open-Meteo; see README. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResMon - Clock &amp; Weather</title>
+<style>
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#04060B; cursor:none;
+               user-select:none; -webkit-user-select:none; touch-action:none; }
+  #stage { position:absolute; left:0; top:0; width:1100px; height:3840px; overflow:hidden;
+           font-family:'Bahnschrift', 'Segoe UI', sans-serif; color:#E8F1FF;
+           background:
+             radial-gradient(900px 600px at 50% 420px, #0E2A4A66, transparent 70%),
+             radial-gradient(900px 700px at 50% 1500px, #3A0E4A33, transparent 70%),
+             linear-gradient(180deg, #050812 0%, #04060B 100%); }
+  .abs { position:absolute; }
+  [data-lc="text"] { white-space:nowrap; letter-spacing:0; text-transform:none; }
+
+  .panel { position:absolute; left:50px; width:1000px; border-radius:28px;
+           background:linear-gradient(180deg,#0C1424E6,#080D18E6);
+           border:2px solid #1A2840; box-shadow:0 20px 60px #0008, inset 0 1px 0 #ffffff10; }
+  .panel::before { content:''; position:absolute; left:40px; right:40px; top:-2px; height:3px; border-radius:3px;
+                   background:linear-gradient(90deg,transparent,var(--acc),transparent); }
+  .cyan { --acc:#3DE0FF; } .pink { --acc:#FF4FA3; } .amber { --acc:#FFB547; }
+  .tag  { font:600 34px 'Bahnschrift'; letter-spacing:8px; color:var(--acc); }
+  .cap  { font:400 26px 'Bahnschrift'; letter-spacing:5px; color:#6B7F9C; text-transform:uppercase; }
+  .unit { font:300 40px 'Bahnschrift'; color:#6B7F9C; }
+  .sep  { position:absolute; left:100px; width:900px; height:2px; background:#1A2840; }
+
+  .stat { position:absolute; top:1400px; width:210px; }
+  .stat .v { position:absolute; top:48px; left:0; font:400 74px 'Bahnschrift'; color:#F4F8FF; line-height:1; }
+  .stat .u { position:absolute; top:76px; font:300 36px 'Bahnschrift'; color:#6B7F9C; line-height:1; }
+
+  .row { position:absolute; left:50px; width:1000px; height:220px; }
+  .row .day  { position:absolute; left:50px; top:78px; font:400 64px 'Bahnschrift'; color:#F4F8FF; line-height:1; }
+  .row .ico  { position:absolute; left:255px; top:38px; width:145px; height:145px; }
+  .row .pop  { position:absolute; left:560px; top:74px; width:90px; text-align:right; font:400 50px 'Bahnschrift'; color:#3DE0FF; line-height:1; }
+  .row .popu { position:absolute; left:656px; top:86px; font:300 32px 'Bahnschrift'; color:#3D8FB0; }
+  .row .hi   { position:absolute; left:740px; top:58px; width:110px; text-align:right; font:400 76px 'Bahnschrift'; color:#F4F8FF; line-height:1; }
+  .row .hiu  { position:absolute; left:852px; top:58px; font:300 52px 'Bahnschrift'; color:#8FA3BF; line-height:1; }
+  .row .lo   { position:absolute; left:870px; top:80px; width:84px; text-align:right; font:300 54px 'Bahnschrift'; color:#6B7F9C; line-height:1; }
+  .row .lou  { position:absolute; left:956px; top:80px; font:300 38px 'Bahnschrift'; color:#4A5A72; line-height:1; }
+
+  /* hourly columns: time, icon, temperature, rain chance */
+  .hc    { position:absolute; top:2048px; width:111px; height:340px; }
+  .hc span { position:absolute; left:0; width:111px; text-align:center; line-height:1; }
+  .hc .ht    { top:0;   font:400 30px 'Bahnschrift'; color:#8FA3BF; }
+  .hc .hi2   { position:absolute; left:10px; top:50px; width:91px; height:91px; }
+  .hc .htemp { top:165px; font:400 52px 'Bahnschrift'; color:#F4F8FF; }
+  .hc .hpop  { top:240px; font:400 30px 'Bahnschrift'; color:#3DE0FF; }
+</style>
+</head>
+<body>
+<div id="stage" data-width="1100" data-height="3840">
+
+  <!-- ================= CLOCK (in its own panel) ================= -->
+  <div class="panel amber" style="top:60px; height:600px"></div>
+  <div class="abs" style="left:0; top:105px; width:1100px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="TIME" data-sub="h:m" style="font:700 300px 'Bahnschrift'; line-height:1; color:#F4F8FF">18:05</span>
+  </div>
+  <div class="abs" style="left:0; top:445px; width:1100px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="DAY" data-sub="Day_full" style="font:300 80px 'Bahnschrift'; color:#FFB547; line-height:1">Wednesday</span>
+  </div>
+  <div class="abs" style="left:0; top:555px; width:1100px; display:flex; justify-content:center; gap:20px;
+                          font:300 52px 'Bahnschrift'; color:#8FA3BF; line-height:1">
+    <span data-lc="text" data-sensor="DATE" data-sub="D_num" data-align="right">25</span>
+    <span data-lc="text" data-sensor="DATE" data-sub="M_full" data-align="center">November</span>
+    <span data-lc="text" data-sensor="DATE" data-sub="Y" data-align="left">2026</span>
+  </div>
+
+  <!-- tap the clock: Buenos Aires time (UTC-3, no daylight saving) for 5 seconds, then back to local time -->
+  <div data-lc="button" data-action="timezone" data-tz="-3" data-tz-name="Buenos Aires" data-seconds="5"
+       class="abs" style="left:0; top:80px; width:1100px; height:580px"></div>
+
+  <!-- ================= NOW ================= -->
+  <div class="panel pink" style="top:700px; height:1160px"></div>
+  <div class="abs pink" style="left:100px; top:745px"><span class="tag" data-lc="label">NOW</span></div>
+  <!-- place, under the temperature (right edge lines up with the °C) -->
+  <div class="abs" style="left:500px; top:1133px; width:425px; display:flex; justify-content:flex-end">
+    <span data-lc="text" data-sensor="WX_PLACE" data-align="right" style="font:300 50px 'Bahnschrift'; color:#8FA3BF; line-height:1">London</span>
+  </div>
+
+  <div data-lc="icon" data-sensor="WX_ICON" data-sample="51" class="abs" style="left:70px; top:790px; width:380px; height:380px"></div>
+  <span data-lc="text" data-sensor="WX_TEMP" data-align="right" class="abs"
+        style="left:420px; top:815px; width:380px; text-align:right; font:200 290px 'Bahnschrift'; line-height:1; color:#F4F8FF">18</span>
+  <span class="abs" data-lc="text" data-sensor="TEMP_UNIT" data-align="left" style="left:806px; top:830px; font:200 150px 'Bahnschrift'; line-height:1; color:#8FA3BF">°C</span>
+  <!-- condition, centred under the icon (icon centre x = 260) -->
+  <div class="abs" style="left:40px; top:1125px; width:440px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="WX_COND" data-align="center"
+          style="font:400 58px 'Bahnschrift'; line-height:1; color:#3DE0FF">Light drizzle</span>
+  </div>
+
+  <div class="abs cap" style="left:100px; top:1292px">High</div>
+  <span data-lc="text" data-sensor="WX_HIGH" data-align="right" class="abs" style="left:190px; top:1278px; width:80px; text-align:right; font:400 48px 'Bahnschrift'; line-height:1; color:#F4F8FF">21</span>
+  <span class="abs" style="left:272px; top:1280px; font:300 38px 'Bahnschrift'; color:#8FA3BF; line-height:1">°</span>
+  <div class="abs cap" style="left:330px; top:1292px">Low</div>
+  <span data-lc="text" data-sensor="WX_LOW" data-align="right" class="abs" style="left:400px; top:1278px; width:80px; text-align:right; font:400 48px 'Bahnschrift'; line-height:1; color:#F4F8FF">15</span>
+  <span class="abs" style="left:482px; top:1280px; font:300 38px 'Bahnschrift'; color:#8FA3BF; line-height:1">°</span>
+  <div class="abs cap" style="left:580px; top:1292px">Sun</div>
+  <span data-lc="text" data-sensor="WX_SUNRISE" data-align="left" class="abs" style="left:670px; top:1278px; font:400 48px 'Bahnschrift'; line-height:1; color:#FFC44D">05:57</span>
+  <span data-lc="text" data-sensor="WX_SUNSET" data-align="left" class="abs" style="left:850px; top:1278px; font:400 48px 'Bahnschrift'; line-height:1; color:#FF8A5C">20:18</span>
+  <div class="sep" style="top:1370px"></div>
+
+  <div class="stat" style="left:100px"><div class="cap">Feels</div>
+    <span class="v" data-lc="text" data-sensor="WX_FEELS" data-align="right" style="width:110px; text-align:right">19</span><span class="u" style="left:114px">°</span></div>
+  <div class="stat" style="left:330px"><div class="cap">Humidity</div>
+    <span class="v" data-lc="text" data-sensor="WX_HUM" data-align="right" style="width:110px; text-align:right">83</span><span class="u" style="left:116px">%</span></div>
+  <div class="stat" style="left:560px"><div class="cap">Wind</div>
+    <span class="v" data-lc="text" data-sensor="WX_WIND" data-align="right" style="width:90px; text-align:right">8</span><span class="u" data-lc="text" data-sensor="WIND_UNIT" data-align="left" style="left:96px">km/h</span></div>
+  <div class="stat" style="left:820px"><div class="cap">Rain</div>
+    <span class="v" data-lc="text" data-sensor="WX_POP" data-align="right" style="width:110px; text-align:right">88</span><span class="u" style="left:116px">%</span></div>
+  <div class="sep" style="top:1565px"></div>
+
+  <!-- UV index: now (number + band, coloured by wx.lua) and the peak over the next 24 h, on a 0-11+ scale -->
+  <div class="abs cap" style="left:100px; top:1612px">UV now</div>
+  <span data-lc="text" data-sensor="WX_UV" data-color-var="WX_UV_COL" data-align="right" class="abs"
+        style="left:230px; top:1595px; width:80px; text-align:right; font:400 56px 'Bahnschrift'; line-height:1; color:#FFD60A">4</span>
+  <span data-lc="text" data-sensor="WX_UV_LABEL" data-color-var="WX_UV_COL" data-align="left" class="abs"
+        style="left:330px; top:1607px; font:400 40px 'Bahnschrift'; line-height:1; color:#FFD60A">Moderate</span>
+  <div class="abs cap" style="left:620px; top:1612px">Peak</div>
+  <span data-lc="text" data-sensor="WX_UV_PEAK" data-color-var="WX_UV_PEAK_COL" data-align="right" class="abs"
+        style="left:700px; top:1595px; width:80px; text-align:right; font:400 56px 'Bahnschrift'; line-height:1; color:#FF453A">9</span>
+  <span data-lc="text" data-sensor="WX_UV_PEAK_TIME" data-align="left" class="abs"
+        style="left:810px; top:1607px; font:300 40px 'Bahnschrift'; line-height:1; color:#8FA3BF">14:00</span>
+  <div class="abs" style="left:100px; top:1715px; width:900px; height:16px; border-radius:8px;
+       background:linear-gradient(90deg,#4CD964 0%,#4CD964 18%,#FFD60A 27%,#FFD60A 45%,#FF9F0A 55%,#FF9F0A 64%,#FF453A 73%,#FF453A 91%,#BF5AF2 100%)"></div>
+  <div class="abs cap" style="left:100px; top:1759px; font-size:22px">0</div>
+  <div class="abs cap" style="left:0; width:1000px; top:1759px; font-size:22px; text-align:right">11+</div>
+  <div data-lc="marker" data-sensor="WX_UV_POS" data-max="11" data-range="900" data-fill="#F4F8FF" data-stroke="#04060B" data-stroke-width="6"
+       class="abs" style="left:80px; top:1703px; width:40px; height:40px; border-radius:50%; background:#F4F8FF; border:6px solid #04060B; box-sizing:border-box"></div>
+
+  <!-- ================= NEXT 24 HOURS ================= -->
+  <div class="panel cyan" style="top:1900px; height:500px"></div>
+  <div class="abs cyan" style="left:100px; top:1945px"><span class="tag" data-lc="label">NEXT 24 HOURS</span></div>
+  <div class="hc" style="left:106px">
+    <span class="ht" data-lc="text" data-sensor="WX_H1_TIME" data-align="center">Now</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H1_ICON" data-sample="51"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H1_TEMP" data-align="center">18°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H1_POP" data-align="center">88%</span>
+  </div>
+  <div class="hc" style="left:217px">
+    <span class="ht" data-lc="text" data-sensor="WX_H2_TIME" data-align="center">02:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H2_ICON" data-sample="3"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H2_TEMP" data-align="center">17°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H2_POP" data-align="center">60%</span>
+  </div>
+  <div class="hc" style="left:328px">
+    <span class="ht" data-lc="text" data-sensor="WX_H3_TIME" data-align="center">05:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H3_ICON" data-sample="1"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H3_TEMP" data-align="center">15°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H3_POP" data-align="center">20%</span>
+  </div>
+  <div class="hc" style="left:439px">
+    <span class="ht" data-lc="text" data-sensor="WX_H4_TIME" data-align="center">08:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H4_ICON" data-sample="1"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H4_TEMP" data-align="center">14°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H4_POP" data-align="center">5%</span>
+  </div>
+  <div class="hc" style="left:550px">
+    <span class="ht" data-lc="text" data-sensor="WX_H5_TIME" data-align="center">11:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H5_ICON" data-sample="0"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H5_TEMP" data-align="center">14°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H5_POP" data-align="center">0%</span>
+  </div>
+  <div class="hc" style="left:661px">
+    <span class="ht" data-lc="text" data-sensor="WX_H6_TIME" data-align="center">14:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H6_ICON" data-sample="2"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H6_TEMP" data-align="center">17°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H6_POP" data-align="center">10%</span>
+  </div>
+  <div class="hc" style="left:772px">
+    <span class="ht" data-lc="text" data-sensor="WX_H7_TIME" data-align="center">17:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H7_ICON" data-sample="61"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H7_TEMP" data-align="center">20°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H7_POP" data-align="center">35%</span>
+  </div>
+  <div class="hc" style="left:883px">
+    <span class="ht" data-lc="text" data-sensor="WX_H8_TIME" data-align="center">20:00</span>
+    <div class="hi2" data-lc="icon" data-sensor="WX_H8_ICON" data-sample="3"></div>
+    <span class="htemp" data-lc="text" data-sensor="WX_H8_TEMP" data-align="center">21°</span>
+    <span class="hpop" data-lc="text" data-sensor="WX_H8_POP" data-align="center">40%</span>
+  </div>
+
+  <!-- ================= FORECAST ================= -->
+  <div class="panel amber" style="top:2440px; height:1250px"></div>
+  <div class="abs amber" style="left:100px; top:2485px"><span class="tag" data-lc="label">FORECAST</span></div>
+
+  <div class="row" style="top:2560px">
+    <span class="day" data-lc="text" data-sensor="WX_D1_DAY" data-align="left">Thu</span>
+    <div class="ico" data-lc="icon" data-sensor="WX_D1_ICON" data-sample="53"></div>
+    <span class="pop" data-lc="text" data-sensor="WX_D1_POP" data-align="right">47</span><span class="popu">%</span>
+    <span class="hi" data-lc="text" data-sensor="WX_D1_HIGH" data-align="right">21</span><span class="hiu">°</span>
+    <span class="lo" data-lc="text" data-sensor="WX_D1_LOW" data-align="right">12</span><span class="lou">°</span>
+  </div>
+  <div class="sep" style="top:2775px"></div>
+  <div class="row" style="top:2780px">
+    <span class="day" data-lc="text" data-sensor="WX_D2_DAY" data-align="left">Fri</span>
+    <div class="ico" data-lc="icon" data-sensor="WX_D2_ICON" data-sample="3"></div>
+    <span class="pop" data-lc="text" data-sensor="WX_D2_POP" data-align="right">0</span><span class="popu">%</span>
+    <span class="hi" data-lc="text" data-sensor="WX_D2_HIGH" data-align="right">21</span><span class="hiu">°</span>
+    <span class="lo" data-lc="text" data-sensor="WX_D2_LOW" data-align="right">11</span><span class="lou">°</span>
+  </div>
+  <div class="sep" style="top:2995px"></div>
+  <div class="row" style="top:3000px">
+    <span class="day" data-lc="text" data-sensor="WX_D3_DAY" data-align="left">Sat</span>
+    <div class="ico" data-lc="icon" data-sensor="WX_D3_ICON" data-sample="1"></div>
+    <span class="pop" data-lc="text" data-sensor="WX_D3_POP" data-align="right">6</span><span class="popu">%</span>
+    <span class="hi" data-lc="text" data-sensor="WX_D3_HIGH" data-align="right">21</span><span class="hiu">°</span>
+    <span class="lo" data-lc="text" data-sensor="WX_D3_LOW" data-align="right">12</span><span class="lou">°</span>
+  </div>
+  <div class="sep" style="top:3215px"></div>
+  <div class="row" style="top:3220px">
+    <span class="day" data-lc="text" data-sensor="WX_D4_DAY" data-align="left">Sun</span>
+    <div class="ico" data-lc="icon" data-sensor="WX_D4_ICON" data-sample="51"></div>
+    <span class="pop" data-lc="text" data-sensor="WX_D4_POP" data-align="right">24</span><span class="popu">%</span>
+    <span class="hi" data-lc="text" data-sensor="WX_D4_HIGH" data-align="right">23</span><span class="hiu">°</span>
+    <span class="lo" data-lc="text" data-sensor="WX_D4_LOW" data-align="right">12</span><span class="lou">°</span>
+  </div>
+  <div class="sep" style="top:3435px"></div>
+  <div class="row" style="top:3440px">
+    <span class="day" data-lc="text" data-sensor="WX_D5_DAY" data-align="left">Mon</span>
+    <div class="ico" data-lc="icon" data-sensor="WX_D5_ICON" data-sample="3"></div>
+    <span class="pop" data-lc="text" data-sensor="WX_D5_POP" data-align="right">18</span><span class="popu">%</span>
+    <span class="hi" data-lc="text" data-sensor="WX_D5_HIGH" data-align="right">24</span><span class="hiu">°</span>
+    <span class="lo" data-lc="text" data-sensor="WX_D5_LOW" data-align="right">13</span><span class="lou">°</span>
+  </div>
+</div>
+<script src="../wx-icons.js"></script>
+<script src="../lc-live.js"></script>
+</body>
+</html>

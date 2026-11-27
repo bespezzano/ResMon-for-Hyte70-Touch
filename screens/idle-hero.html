@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!-- Idle banner for the gaming page: shown in the GAME_HERO slot (952x330) while no game is running.
+     Original artwork. Not a page of its own. The controller is animated (a 3 s loop: it floats and tilts, its
+     glow and light bar pulse, the face buttons light in turn, the sticks circle). build_skin.py renders:
+       ?part=bg                     the banner without the controller (fills the window)
+       ?frames=N&box=x,y,w,h&px=W   N frames of the controller cut to box (design px), each W px wide, in a row
+     Opened as is, it plays the animation. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResMon - idle game banner</title>
+<style>
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:transparent; }
+  svg { display:block; width:100%; height:100%; }
+</style>
+</head>
+<body>
+<svg id="art" viewBox="0 0 952 330" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="card"><rect width="952" height="330" rx="18"/></clipPath>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#060A16"/><stop offset="0.62" stop-color="#1A0E2E"/><stop offset="1" stop-color="#07101E"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC44D"/><stop offset="0.55" stop-color="#FF7A6B"/><stop offset="1" stop-color="#FF4FA3"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="1" r="0.6">
+      <stop offset="0" stop-color="#FF4FA3" stop-opacity="0.45"/><stop offset="1" stop-color="#FF4FA3" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="floorFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3DE0FF" stop-opacity="0.08"/><stop offset="1" stop-color="#3DE0FF" stop-opacity="0.9"/>
+    </linearGradient>
+    <mask id="floorMask"><rect x="0" y="206" width="952" height="124" fill="url(#floorFade)"/></mask>
+    <!-- the sun's horizontal cuts -->
+    <mask id="sunCuts">
+      <rect x="0" y="0" width="952" height="330" fill="#fff"/>
+      <rect x="0" y="150" width="952" height="5" fill="#000"/><rect x="0" y="166" width="952" height="7" fill="#000"/>
+      <rect x="0" y="183" width="952" height="9" fill="#000"/><rect x="0" y="199" width="952" height="11" fill="#000"/>
+    </mask>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+
+  <g clip-path="url(#card)">
+    <rect width="952" height="330" fill="url(#sky)"/>
+    <!-- stars -->
+    <g fill="#C9D4FF">
+      <circle cx="60" cy="40" r="1.6" opacity=".8"/><circle cx="140" cy="92" r="1.1" opacity=".5"/><circle cx="214" cy="28" r="1.3" opacity=".7"/>
+      <circle cx="402" cy="58" r="1" opacity=".5"/><circle cx="470" cy="24" r="1.6" opacity=".8"/><circle cx="560" cy="80" r="1.2" opacity=".6"/>
+      <circle cx="636" cy="34" r="1" opacity=".5"/><circle cx="742" cy="22" r="1.4" opacity=".7"/><circle cx="822" cy="60" r="1.1" opacity=".5"/>
+      <circle cx="904" cy="30" r="1.6" opacity=".8"/><circle cx="30" cy="130" r="1" opacity=".4"/><circle cx="910" cy="132" r="1.2" opacity=".5"/>
+    </g>
+    <!-- horizon glow and sun -->
+    <ellipse cx="300" cy="206" rx="420" ry="120" fill="url(#glow)"/>
+    <circle cx="300" cy="206" r="116" fill="url(#sun)" mask="url(#sunCuts)"/>
+    <circle cx="300" cy="206" r="116" fill="#FF7A6B" opacity=".35" filter="url(#soft)" mask="url(#sunCuts)"/>
+    <!-- distant ridge -->
+    <path d="M0 206 L70 178 L120 192 L190 160 L250 190 L330 172 L400 196 L470 168 L540 190 L610 176 L690 198 L760 170 L830 188 L900 166 L952 184 L952 206 Z"
+          fill="#0A0F1E" stroke="#FF4FA3" stroke-opacity=".55" stroke-width="2" stroke-linejoin="round"/>
+    <!-- grid floor -->
+    <rect x="0" y="206" width="952" height="124" fill="#070B16"/>
+    <g mask="url(#floorMask)" stroke="#3DE0FF" stroke-width="2" fill="none">
+      <line x1="0" y1="206" x2="952" y2="206"/>
+      <line x1="0" y1="212" x2="952" y2="212"/><line x1="0" y1="220" x2="952" y2="220"/><line x1="0" y1="231" x2="952" y2="231"/>
+      <line x1="0" y1="246" x2="952" y2="246"/><line x1="0" y1="266" x2="952" y2="266"/><line x1="0" y1="293" x2="952" y2="293"/>
+      <line x1="0" y1="328" x2="952" y2="328"/>
+      <!-- lines to the vanishing point (476, 206) -->
+      <line x1="476" y1="206" x2="476" y2="330"/>
+      <line x1="476" y1="206" x2="360" y2="330"/><line x1="476" y1="206" x2="592" y2="330"/>
+      <line x1="476" y1="206" x2="240" y2="330"/><line x1="476" y1="206" x2="712" y2="330"/>
+      <line x1="476" y1="206" x2="110" y2="330"/><line x1="476" y1="206" x2="842" y2="330"/>
+      <line x1="476" y1="206" x2="-40" y2="330"/><line x1="476" y1="206" x2="992" y2="330"/>
+      <line x1="476" y1="206" x2="-220" y2="330"/><line x1="476" y1="206" x2="1172" y2="330"/>
+      <line x1="476" y1="206" x2="-460" y2="330"/><line x1="476" y1="206" x2="1412" y2="330"/>
+    </g>
+    <!-- game controller, floating on the right: compact body, deep grips, shoulder buttons -->
+    <g id="pad" transform="translate(716 124) rotate(-10)">
+      <!-- shoulder buttons -->
+      <path d="M-92 -30 C-86 -46 -70 -54 -48 -52" fill="none" stroke="#FF4FA3" stroke-width="7" stroke-linecap="round"/>
+      <path d="M92 -30 C86 -46 70 -54 48 -52" fill="none" stroke="#FF4FA3" stroke-width="7" stroke-linecap="round"/>
+      <!-- glow -->
+      <path d="M-60 -42 C-28 -48 28 -48 60 -42 C92 -37 106 -18 112 10 C118 40 122 66 108 80 C94 94 74 86 64 70 C54 56 44 48 28 48 L-28 48 C-44 48 -54 56 -64 70 C-74 86 -94 94 -108 80 C-122 66 -118 40 -112 10 C-106 -18 -92 -37 -60 -42 Z" fill="none" stroke="#3DE0FF" stroke-width="10" filter="url(#soft)" opacity=".85" id="padGlow"/>
+      <!-- body -->
+      <path d="M-60 -42 C-28 -48 28 -48 60 -42 C92 -37 106 -18 112 10 C118 40 122 66 108 80 C94 94 74 86 64 70 C54 56 44 48 28 48 L-28 48 C-44 48 -54 56 -64 70 C-74 86 -94 94 -108 80 C-122 66 -118 40 -112 10 C-106 -18 -92 -37 -60 -42 Z" fill="#0B1424" stroke="#9FF0FF" stroke-width="3.5" stroke-linejoin="round"/>
+      <!-- inner panel line and light bar -->
+      <path d="M-58 -30 C-26 -35 26 -35 58 -30" fill="none" stroke="#3DE0FF" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
+      <rect x="-16" y="-24" width="32" height="6" rx="3" fill="#FF4FA3"/>
+      <rect x="-16" y="-24" width="32" height="6" rx="3" fill="#FF4FA3" filter="url(#soft)" opacity=".9" id="barGlow"/>
+      <!-- d-pad -->
+      <path d="M-82 -6 h10 v-10 h10 v10 h10 v10 h-10 v10 h-10 v-10 h-10 z" fill="#0F1E33" stroke="#3DE0FF" stroke-width="3" stroke-linejoin="round"/>
+      <!-- face buttons -->
+      <circle cx="67" cy="-15" r="7" fill="#0F1E33" stroke="#5BFFB0" stroke-width="3" class="fb"/>
+      <circle cx="84" cy="0"   r="7" fill="#0F1E33" stroke="#FF4FA3" stroke-width="3" class="fb"/>
+      <circle cx="50" cy="0"   r="7" fill="#0F1E33" stroke="#FFC44D" stroke-width="3" class="fb"/>
+      <circle cx="67" cy="15"  r="7" fill="#0F1E33" stroke="#3DE0FF" stroke-width="3" class="fb"/>
+      <!-- sticks: ring and cap -->
+      <circle cx="-34" cy="24" r="15" fill="none" stroke="#9FF0FF" stroke-width="3"/>
+      <circle cx="-34" cy="24" r="7" fill="#3DE0FF" opacity=".55" id="capL"/>
+      <circle cx="34" cy="24" r="15" fill="none" stroke="#9FF0FF" stroke-width="3"/>
+      <circle cx="34" cy="24" r="7" fill="#3DE0FF" opacity=".55" id="capR"/>
+      <!-- centre buttons -->
+      <rect x="-24" y="-6" width="11" height="5" rx="2.5" fill="#8FA3BF"/><rect x="13" y="-6" width="11" height="5" rx="2.5" fill="#8FA3BF"/>
+    </g>
+    <!-- inner edge, like the panel art -->
+    <rect x="1" y="1" width="950" height="328" rx="17" fill="none" stroke="#ffffff" stroke-opacity=".06" stroke-width="2"/>
+  </g>
+</svg>
+<script>
+(function () {
+  const TAU = Math.PI * 2, q = new URLSearchParams(location.search);
+  const art = document.getElementById('art'), pad = document.getElementById('pad');
+  // the controller at phase t (0..1, seamless loop); g is #pad or a copy of it
+  function pose(g, t) {
+    const $ = sel => g.querySelector(sel), w = Math.sin(TAU * t);
+    g.setAttribute('transform', `translate(716 ${(124 - 6 * w).toFixed(2)}) rotate(${(-10 + 2.5 * Math.cos(TAU * t)).toFixed(2)})`);
+    const pulse = 0.5 + 0.5 * Math.sin(TAU * 2 * t);
+    $('[id$="padGlow"]').setAttribute('opacity', (0.45 + 0.45 * pulse).toFixed(2));
+    $('[id$="barGlow"]').setAttribute('opacity', (0.3 + 0.7 * pulse).toFixed(2));
+    const lit = Math.floor(t * 4) % 4;
+    g.querySelectorAll('.fb').forEach((b, i) => b.setAttribute('fill', i === lit ? b.getAttribute('stroke') : '#0F1E33'));
+    $('[id$="capL"]').setAttribute('cx', (-34 + 4 * Math.cos(TAU * t)).toFixed(2));
+    $('[id$="capL"]').setAttribute('cy', (24 + 4 * Math.sin(TAU * t)).toFixed(2));
+    $('[id$="capR"]').setAttribute('cx', (34 - 4 * Math.cos(TAU * t)).toFixed(2));
+    $('[id$="capR"]').setAttribute('cy', (24 + 4 * Math.sin(TAU * t)).toFixed(2));
+  }
+  if (q.get('part') === 'bg') { pad.remove(); return; }
+  const n = +q.get('frames');
+  if (n) {
+    // strip mode: the full banner stays in the page (its defs hold the glow filter) but takes no space
+    const [bx, by, bw, bh] = q.get('box').split(',').map(Number), px = +q.get('px'), ph = px * bh / bw;
+    art.style.cssText = 'position:absolute;width:0;height:0';
+    for (let f = 0; f < n; f++) {
+      const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      sv.setAttribute('viewBox', `${bx} ${by} ${bw} ${bh}`);
+      sv.style.cssText = `position:absolute;left:${f * px}px;top:0;width:${px}px;height:${ph}px`;
+      const g = pad.cloneNode(true);
+      g.querySelectorAll('[id]').forEach(e => { e.id = 'f' + f + e.id; });
+      g.id = 'f' + f + 'pad';
+      // each frame carries its own copy of the glow filter
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'), soft = document.getElementById('soft').cloneNode(true);
+      soft.id = 'f' + f + 'soft'; defs.appendChild(soft); sv.appendChild(defs);
+      g.querySelectorAll('[filter]').forEach(e => e.setAttribute('filter', `url(#f${f}soft)`));
+      sv.appendChild(g); document.body.appendChild(sv); pose(g, f / n);
+    }
+    art.remove();
+    return;
+  }
+  // opened as is: play the loop (3 s)
+  const t0 = performance.now();
+  (function tick(now) { pose(pad, ((now - t0) / 3000) % 1); requestAnimationFrame(tick); })(t0);
+})();
+</script>
+</body>
+</html>

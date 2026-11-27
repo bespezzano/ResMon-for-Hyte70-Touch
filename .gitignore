@@ -1,0 +1,18 @@
+# your own data: places, caches, history, game lists and art, logs
+weather.json
+wx-cache.json
+known-games.txt
+autoswitch.log
+np-history/
+game-art/
+look.json
+settings.inc
+
+# build output (rainmeter/build_skin.py, rainmeter/package.py)
+rainmeter/ResMon/
+dist/
+
+# local tools
+.claude/
+__pycache__/
+*.pyc

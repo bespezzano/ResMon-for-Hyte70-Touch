@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- Now-playing page for the HYTE Y70 Touch (1100x3840 portrait): album art, track, progress and touch controls
+     for whatever Windows' media controls report (YouTube Music in the browser, Spotify, ...), audio output with
+     volume buttons, a spectrum visualiser and the recently played tracks. NP_* slots are filled by the Rainmeter skin (np.lua). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResMon - Music</title>
+<style>
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#04060B; cursor:none;
+               user-select:none; -webkit-user-select:none; touch-action:none; }
+  #stage { position:absolute; left:0; top:0; width:1100px; height:3840px; overflow:hidden;
+           font-family:'Bahnschrift', 'Segoe UI', sans-serif; color:#E8F1FF;
+           background:
+             radial-gradient(900px 700px at 50% 2600px, #0E2A4A55, transparent 70%),
+             #04060B; }
+  .abs { position:absolute; }
+  [data-lc="text"] { white-space:nowrap; letter-spacing:0; text-transform:none; }
+  [data-lines="2"] { white-space:normal !important; }
+
+  .panel { position:absolute; left:50px; width:1000px; border-radius:28px;
+           background:linear-gradient(180deg,#0C1424E6,#080D18E6);
+           border:2px solid #1A2840; box-shadow:0 20px 60px #0008, inset 0 1px 0 #ffffff10; }
+  .panel::before { content:''; position:absolute; left:40px; right:40px; top:-2px; height:3px; border-radius:3px;
+                   background:linear-gradient(90deg,transparent,var(--acc),transparent); }
+  .cyan { --acc:#3DE0FF; } .pink { --acc:#FF4FA3; } .amber { --acc:#FFB547; }
+  .tag  { font:600 34px 'Bahnschrift'; letter-spacing:8px; color:var(--acc); }
+  .cap  { font:400 26px 'Bahnschrift'; letter-spacing:5px; color:#6B7F9C; text-transform:uppercase; }
+  .sep  { position:absolute; left:100px; width:900px; height:2px; background:#1A2840; }
+  .ico  { font-family:'Segoe Fluent Icons'; font-weight:400; line-height:1; }
+  .round { position:absolute; border-radius:50%; }
+  .thumb { position:absolute; left:100px; width:100px; height:100px; border-radius:14px; background:#101A2C; }
+  .row-t { left:236px; width:590px; font:400 42px 'Bahnschrift'; line-height:1; color:#F4F8FF; }
+  .row-a { left:236px; width:590px; font:300 32px 'Bahnschrift'; line-height:1; color:#8FA3BF; }
+  .row-ago { left:820px; width:180px; text-align:right; font:300 28px 'Bahnschrift'; line-height:1; color:#6B7F9C; }
+</style>
+</head>
+<body>
+<div id="stage" data-width="1100" data-height="3840">
+
+  <!-- ================= HEADER ================= -->
+  <div class="abs cyan" style="left:80px; top:52px; display:flex; align-items:baseline; gap:24px">
+    <span class="tag" data-lc="label">NOW PLAYING</span>
+    <span data-lc="text" data-sensor="NP_SOURCE" data-align="left" style="font:300 34px 'Bahnschrift'; color:#8FA3BF">YouTube Music</span>
+  </div>
+  <span data-lc="text" data-sensor="TIME" data-sub="h:m" data-align="right" class="abs"
+        style="left:820px; top:46px; width:200px; text-align:right; font:300 48px 'Bahnschrift'; line-height:1; color:#8FA3BF">20:41</span>
+
+  <!-- ================= ART + TRACK ================= -->
+  <div data-lc="image" data-sensor="NP_ART" class="abs" style="left:0; top:130px; width:1100px; height:1100px"></div>
+  <!-- ================= PLAYER: track, progress and controls (over the art's faded bottom) ================= -->
+  <div class="panel cyan" style="top:1050px; height:750px"></div>
+  <span data-lc="text" data-sensor="NP_TITLE" data-align="left" data-lines="2" class="abs"
+        style="left:100px; top:1090px; width:900px; font:500 72px 'Bahnschrift'; line-height:1.12; color:#F4F8FF">Midnight City (Remastered Extended Version)</span>
+  <span data-lc="text" data-sensor="NP_ARTIST" data-align="left" data-lines="1" class="abs"
+        style="left:100px; top:1268px; width:900px; font:400 50px 'Bahnschrift'; line-height:1; color:#3DE0FF">M83</span>
+  <span data-lc="text" data-sensor="NP_ALBUM" data-align="left" data-lines="1" class="abs"
+        style="left:100px; top:1334px; width:900px; font:300 36px 'Bahnschrift'; line-height:1; color:#8FA3BF">Hurry Up, We're Dreaming</span>
+
+  <div data-lc="bar" data-sensor="NP_PROGRESS" data-max="100" data-on="#3DE0FF" data-gradient="#FF4FA3" data-off="#1A2840" data-radius="6"
+       data-sample="38" class="abs" style="left:100px; top:1430px; width:900px; height:12px"></div>
+  <span data-lc="text" data-sensor="NP_POS" data-align="left" class="abs" style="left:100px; top:1466px; font:400 32px 'Bahnschrift'; line-height:1; color:#8FA3BF">1:39</span>
+  <span data-lc="text" data-sensor="NP_DUR" data-align="right" class="abs" style="left:700px; top:1466px; width:300px; text-align:right; font:400 32px 'Bahnschrift'; line-height:1; color:#8FA3BF">4:03</span>
+
+  <!-- controls: previous, play/pause, next -->
+  <div class="round" style="left:440px; top:1530px; width:220px; height:220px; background:linear-gradient(135deg,#3DE0FF,#5BA8FF); box-shadow:0 0 60px #3DE0FF44"></div>
+  <div class="abs" style="left:440px; top:1592px; width:220px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="NP_PLAYICON" class="ico" style="font-size:96px; color:#04060B">&#xE769;</span>
+  </div>
+  <div class="round" style="left:190px; top:1560px; width:160px; height:160px; background:#0C1424; border:2px solid #1A2840"></div>
+  <div class="abs ico" style="left:190px; top:1604px; width:164px; text-align:center; font-size:72px; color:#E8F1FF">&#xE892;</div>
+  <div class="round" style="left:750px; top:1560px; width:160px; height:160px; background:#0C1424; border:2px solid #1A2840"></div>
+  <div class="abs ico" style="left:750px; top:1604px; width:164px; text-align:center; font-size:72px; color:#E8F1FF">&#xE893;</div>
+  <div data-lc="button" data-action="Prev" class="abs" style="left:170px; top:1540px; width:200px; height:200px"></div>
+  <div data-lc="button" data-action="PlayPause" class="abs" style="left:430px; top:1520px; width:240px; height:240px"></div>
+  <div data-lc="button" data-action="Next" class="abs" style="left:730px; top:1540px; width:200px; height:200px"></div>
+
+  <!-- ================= OUTPUT ================= -->
+  <div class="panel pink" style="top:1840px; height:440px"></div>
+  <div class="abs pink" style="left:100px; top:1890px"><span class="tag" data-lc="label">OUTPUT</span></div>
+  <span data-lc="text" data-sensor="NP_DEVICE" data-align="left" data-lines="1" class="abs"
+        style="left:100px; top:1948px; width:900px; font:300 36px 'Bahnschrift'; line-height:1; color:#8FA3BF">Speakers (Realtek(R) Audio)</span>
+  <span data-lc="text" data-sensor="NP_VOL" data-align="left" class="abs"
+        style="left:100px; top:2020px; font:200 120px 'Bahnschrift'; line-height:1; color:#F4F8FF">45%</span>
+  <div class="round" style="left:580px; top:2025px; width:120px; height:120px; background:#0C1424; border:2px solid #1A2840"></div>
+  <div class="abs ico" style="left:580px; top:2061px; width:124px; text-align:center; font-size:48px; color:#E8F1FF">&#xE738;</div>
+  <div class="round" style="left:730px; top:2025px; width:120px; height:120px; background:#0C1424; border:2px solid #1A2840"></div>
+  <div class="abs ico" style="left:730px; top:2061px; width:124px; text-align:center; font-size:48px; color:#E8F1FF">&#xE710;</div>
+  <div class="round" style="left:880px; top:2025px; width:120px; height:120px; background:#0C1424; border:2px solid #1A2840"></div>
+  <div class="abs" style="left:880px; top:2061px; width:124px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="NP_VOLICON" class="ico" style="font-size:48px; color:#FF4FA3">&#xE767;</span>
+  </div>
+  <div data-lc="button" data-action="VolDown" class="abs" style="left:570px; top:2015px; width:140px; height:140px"></div>
+  <div data-lc="button" data-action="VolUp" class="abs" style="left:720px; top:2015px; width:140px; height:140px"></div>
+  <div data-lc="button" data-action="Mute" class="abs" style="left:870px; top:2015px; width:140px; height:140px"></div>
+  <div data-lc="bar" data-sensor="NP_VOLPCT" data-max="100" data-segments="50" data-gap="4" data-on="#FF4FA3" data-gradient="#FFB547" data-off="#26102A"
+       data-sample="45" class="abs" style="left:100px; top:2200px; width:900px; height:22px"></div>
+
+  <!-- ================= VISUALISER ================= -->
+  <div class="panel cyan" style="top:2320px; height:500px"></div>
+  <div class="abs cyan" style="left:100px; top:2370px"><span class="tag" data-lc="label">SPECTRUM</span></div>
+  <div data-lc="visualizer" data-bars="48" data-gap="6" data-reflect="0.2" data-on="#3DE0FF" data-gradient="#FF4FA3"
+       data-off="#101A2C" class="abs" style="left:100px; top:2430px; width:900px; height:350px"></div>
+
+  <!-- ================= RECENTLY PLAYED ================= -->
+  <div class="panel amber" style="top:2860px; height:820px"></div>
+  <div class="abs amber" style="left:100px; top:2910px"><span class="tag" data-lc="label">RECENTLY PLAYED</span></div>
+  <div class="thumb" style="top:2970px"></div>
+  <div data-lc="image" data-sensor="NP_H1_ART" class="abs" style="left:100px; top:2970px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H1_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:2980px">Fidelity</span>
+  <span data-lc="text" data-sensor="NP_H1_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3032px">Regina Spektor</span>
+  <span data-lc="text" data-sensor="NP_H1_AGO" data-align="right" class="abs row-ago" style="top:2986px">2 min ago</span>
+  <div class="thumb" style="top:3086px"></div>
+  <div data-lc="image" data-sensor="NP_H2_ART" class="abs" style="left:100px; top:3086px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H2_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:3096px">Samson</span>
+  <span data-lc="text" data-sensor="NP_H2_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3148px">Regina Spektor</span>
+  <span data-lc="text" data-sensor="NP_H2_AGO" data-align="right" class="abs row-ago" style="top:3102px">6 min ago</span>
+  <div class="thumb" style="top:3202px"></div>
+  <div data-lc="image" data-sensor="NP_H3_ART" class="abs" style="left:100px; top:3202px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H3_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:3212px">Better</span>
+  <span data-lc="text" data-sensor="NP_H3_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3264px">Regina Spektor</span>
+  <span data-lc="text" data-sensor="NP_H3_AGO" data-align="right" class="abs row-ago" style="top:3218px">10 min ago</span>
+  <div class="thumb" style="top:3318px"></div>
+  <div data-lc="image" data-sensor="NP_H4_ART" class="abs" style="left:100px; top:3318px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H4_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:3328px">On the Radio</span>
+  <span data-lc="text" data-sensor="NP_H4_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3380px">Regina Spektor</span>
+  <span data-lc="text" data-sensor="NP_H4_AGO" data-align="right" class="abs row-ago" style="top:3334px">14 min ago</span>
+  <div class="thumb" style="top:3434px"></div>
+  <div data-lc="image" data-sensor="NP_H5_ART" class="abs" style="left:100px; top:3434px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H5_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:3444px">Heroes</span>
+  <span data-lc="text" data-sensor="NP_H5_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3496px">David Bowie</span>
+  <span data-lc="text" data-sensor="NP_H5_AGO" data-align="right" class="abs row-ago" style="top:3450px">1 h ago</span>
+  <div class="thumb" style="top:3550px"></div>
+  <div data-lc="image" data-sensor="NP_H6_ART" class="abs" style="left:100px; top:3550px; width:100px; height:100px"></div>
+  <span data-lc="text" data-sensor="NP_H6_TITLE" data-align="left" data-lines="1" class="abs row-t" style="top:3560px">Politik</span>
+  <span data-lc="text" data-sensor="NP_H6_ARTIST" data-align="left" data-lines="1" class="abs row-a" style="top:3612px">Coldplay</span>
+  <span data-lc="text" data-sensor="NP_H6_AGO" data-align="right" class="abs row-ago" style="top:3566px">2 h ago</span>
+</div>
+<script src="../lc-live.js"></script>
+</body>
+</html>

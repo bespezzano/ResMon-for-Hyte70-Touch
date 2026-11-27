@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "page": "gaming.html",
+  "enter_seconds": 5,
+  "exit_seconds": 10,
+  "game_folders": [
+    "/steamapps/common/", "/epic games/", "/goglibrary/", "/gog games/", "/gog galaxy/games/",
+    "/xboxgames/", ":/games/", "/riot games/", "/wizards of the coast/", "/ea games/",
+    "/ubisoft game launcher/games/"
+  ],
+  "music": {
+    "enabled": true,
+    "page": "music.html",
+    "music_only": true,
+    "enter_seconds": 3,
+    "exit_seconds": 30,
+    "closed_seconds": 3
+  }
+}

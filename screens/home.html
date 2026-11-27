@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!-- Portrait system monitor for the HYTE Y70 Touch screen (1100x3840, rotated portrait).
+     Uses the lconnect-screen-template data-lc slot contract; rainmeter/build_skin.py turns it into a page of the skin. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResMon - Portrait Dark</title>
+<style>
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#04060B; cursor:none;
+               user-select:none; -webkit-user-select:none; touch-action:none; }
+  #stage { position:absolute; left:0; top:0; width:1100px; height:3840px; overflow:hidden;
+           font-family:'Bahnschrift', 'Segoe UI', sans-serif; color:#E8F1FF;
+           background:
+             radial-gradient(900px 700px at 50% 1150px, #0E2A4A55, transparent 70%),
+             radial-gradient(900px 700px at 50% 2150px, #3A0E4A44, transparent 70%),
+             linear-gradient(180deg, #050812 0%, #04060B 100%); }
+  .abs { position:absolute; }
+  [data-lc="text"] { white-space:nowrap; letter-spacing:0; text-transform:none; }
+
+  /* panels */
+  .panel { position:absolute; left:50px; width:1000px; border-radius:28px;
+           background:linear-gradient(180deg,#0C1424E6,#080D18E6);
+           border:2px solid #1A2840; box-shadow:0 20px 60px #0008, inset 0 1px 0 #ffffff10; }
+  .panel::before { content:''; position:absolute; left:40px; right:40px; top:-2px; height:3px; border-radius:3px;
+                   background:linear-gradient(90deg,transparent,var(--acc),transparent); }
+  .cyan { --acc:#3DE0FF; } .pink { --acc:#FF4FA3; } .amber { --acc:#FFB547; } .green { --acc:#5BFFB0; }
+
+  .tag  { font:600 34px 'Bahnschrift'; letter-spacing:8px; color:var(--acc); }
+  .model{ font:300 34px 'Bahnschrift'; color:#8FA3BF; }
+  .cap  { font:400 26px 'Bahnschrift'; letter-spacing:5px; color:#6B7F9C; text-transform:uppercase; }
+  .unit { font:300 40px 'Bahnschrift'; color:#6B7F9C; }
+  .big  { font:300 150px 'Bahnschrift'; line-height:1; }
+  .val  { font:400 72px 'Bahnschrift'; line-height:1; }
+
+  .stat { position:absolute; left:720px; width:280px; }
+  .stat .row { display:flex; align-items:baseline; gap:10px; margin-top:10px; }
+  .divider { position:absolute; left:720px; width:280px; height:2px; background:#1A2840; }
+
+</style>
+</head>
+<body>
+<div id="stage" data-width="1100" data-height="3840">
+
+  <!-- ================= CLOCK (in its own panel) ================= -->
+  <div class="panel amber" style="top:60px; height:600px"></div>
+  <div class="abs" style="left:0; top:105px; width:1100px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="TIME" data-sub="h:m" style="font:700 300px 'Bahnschrift'; line-height:1; color:#F4F8FF">18:05</span>
+  </div>
+  <div class="abs" style="left:0; top:445px; width:1100px; display:flex; justify-content:center">
+    <span data-lc="text" data-sensor="DAY" data-sub="Day_full" style="font:300 80px 'Bahnschrift'; color:#FFB547; line-height:1">Wednesday</span>
+  </div>
+  <div class="abs" style="left:0; top:555px; width:1100px; display:flex; justify-content:center; gap:20px;
+                          font:300 52px 'Bahnschrift'; color:#8FA3BF; line-height:1">
+    <span data-lc="text" data-sensor="DATE" data-sub="D_num" data-align="right">25</span>
+    <span data-lc="text" data-sensor="DATE" data-sub="M_full" data-align="center">November</span>
+    <span data-lc="text" data-sensor="DATE" data-sub="Y" data-align="left">2026</span>
+  </div>
+
+  <!-- tap the clock: Buenos Aires time (UTC-3, no daylight saving) for 5 seconds, then back to local time -->
+  <div data-lc="button" data-action="timezone" data-tz="-3" data-tz-name="Buenos Aires" data-seconds="5"
+       class="abs" style="left:0; top:80px; width:1100px; height:580px"></div>
+
+  <!-- ================= CPU ================= -->
+  <div class="panel cyan" style="top:700px; height:920px"></div>
+  <div class="abs cyan" style="left:100px; top:750px; display:flex; align-items:baseline; gap:26px">
+    <span class="tag" data-lc="label">CPU</span>
+    <span class="model" data-lc="text" data-sensor="CPUMODEL" data-align="left">AMD Ryzen 7 7800X3D</span>
+  </div>
+
+  <!-- temperature gauge (outer) + load gauge (inner) -->
+  <div data-lc="arc" data-sensor="CPUTEMP" data-max="100" data-start="226.8" data-sweep="270" data-thickness="30" data-round
+       data-on="#3DE0FF" data-gradient="#FF4FA3" data-off="#12203A" data-warn="88" data-warn-color="#FF3B3B" data-sample="66"
+       class="abs" style="left:130px; top:840px; width:520px; height:520px"></div>
+  <div data-lc="arc" data-sensor="CPULOAD" data-start="226.8" data-sweep="270" data-thickness="12" data-round
+       data-on="#5BFFB0" data-off="#0F1C2C" data-sample="32"
+       class="abs" style="left:200px; top:910px; width:380px; height:380px"></div>
+  <div class="abs" style="left:130px; top:1010px; width:520px; display:flex; justify-content:center; align-items:flex-start">
+    <span class="big" data-lc="text" data-sensor="CPUTEMP" data-warn="88" data-warn-color="#FF3B3B" style="color:#F4F8FF">66</span>
+    <span class="unit" data-lc="text" data-sensor="TEMP_UNIT" data-align="left" style="margin-top:14px">°C</span>
+  </div>
+  <div class="abs cap" style="left:130px; top:1180px; width:520px; text-align:center">Temperature</div>
+  <div class="abs cap" style="left:130px; top:1300px; width:520px; text-align:center; color:#5BFFB0">Load</div>
+
+  <div class="stat" style="top:950px">
+    <div class="cap">Load</div>
+    <div class="row"><span class="val" data-lc="text" data-sensor="CPULOAD" style="color:#5BFFB0">32</span><span class="unit">%</span></div>
+  </div>
+  <div class="divider" style="top:1120px"></div>
+  <div class="stat" style="top:1155px">
+    <div class="cap">Power</div>
+    <div class="row"><span class="val" data-lc="text" data-sensor="CPUPWR">52</span><span class="unit">W</span></div>
+  </div>
+
+  <div class="abs cap" style="left:100px; top:1410px">Load history</div>
+  <div data-lc="chart" data-sensor="CPULOAD" data-step="6" data-color="#3DE0FF" data-fill-color="#3DE0FF26" data-line-width="3"
+       class="abs" style="left:100px; top:1460px; width:900px; height:110px; border-bottom:2px solid #1A2840"></div>
+
+  <!-- ================= GPU ================= -->
+  <div class="panel pink" style="top:1660px; height:1000px"></div>
+  <div class="abs pink" style="left:100px; top:1710px; display:flex; align-items:baseline; gap:26px">
+    <span class="tag" data-lc="label">GPU</span>
+    <span class="model" data-lc="text" data-sensor="GPUMODEL" data-align="left">NVIDIA GeForce RTX 4080 SUPER</span>
+  </div>
+
+  <div data-lc="arc" data-sensor="GPUTEMP" data-max="100" data-start="226.8" data-sweep="270" data-thickness="30" data-round
+       data-on="#FF4FA3" data-gradient="#FFB547" data-off="#2A1230" data-warn="83" data-warn-color="#FF3B3B" data-sample="62"
+       class="abs" style="left:130px; top:1800px; width:520px; height:520px"></div>
+  <div data-lc="arc" data-sensor="GPULOAD" data-start="226.8" data-sweep="270" data-thickness="12" data-round
+       data-on="#5BFFB0" data-off="#1C1426" data-sample="99"
+       class="abs" style="left:200px; top:1870px; width:380px; height:380px"></div>
+  <div class="abs" style="left:130px; top:1970px; width:520px; display:flex; justify-content:center; align-items:flex-start">
+    <span class="big" data-lc="text" data-sensor="GPUTEMP" data-warn="83" data-warn-color="#FF3B3B" style="color:#F4F8FF">62</span>
+    <span class="unit" data-lc="text" data-sensor="TEMP_UNIT" data-align="left" style="margin-top:14px">°C</span>
+  </div>
+  <div class="abs cap" style="left:130px; top:2140px; width:520px; text-align:center">Temperature</div>
+  <div class="abs cap" style="left:130px; top:2260px; width:520px; text-align:center; color:#5BFFB0">Load</div>
+
+  <div class="stat" style="top:1800px">
+    <div class="cap">Load</div>
+    <div class="row"><span class="val" data-lc="text" data-sensor="GPULOAD" style="color:#5BFFB0">99</span><span class="unit">%</span></div>
+  </div>
+  <div class="divider" style="top:1955px"></div>
+  <div class="stat" style="top:1985px">
+    <div class="cap">Power</div>
+    <div class="row"><span class="val" data-lc="text" data-sensor="GPUPWR">218</span><span class="unit">W</span></div>
+  </div>
+  <div class="divider" style="top:2140px"></div>
+  <div class="stat" style="top:2170px">
+    <div class="cap">Clock</div>
+    <div class="row"><span class="val" data-lc="text" data-sensor="GPUCLOCK_G">2.69</span><span class="unit">GHz</span></div>
+  </div>
+
+  <div class="abs" style="left:100px; top:2380px; width:900px; display:flex; justify-content:space-between">
+    <div><span class="cap">Hot spot </span><span data-lc="text" data-sensor="GPUHOTSPOT" data-warn="95" data-align="left" style="font:400 40px 'Bahnschrift'; color:#FFB547">72</span><span class="cap" data-lc="text" data-sensor="TEMP_UNIT" data-align="left"> °C</span></div>
+    <div><span class="cap">VRAM </span><span data-lc="text" data-sensor="GPUMEMTEMP" data-warn="95" data-align="left" style="font:400 40px 'Bahnschrift'; color:#FFB547">58</span><span class="cap" data-lc="text" data-sensor="TEMP_UNIT" data-align="left"> °C</span></div>
+    <div><span class="cap">Fans </span><span data-lc="text" data-sensor="GPUFAN" style="font:400 40px 'Bahnschrift'; color:#3DE0FF">1140</span><span class="cap"> / </span><span data-lc="text" data-sensor="GPUFAN2" style="font:400 40px 'Bahnschrift'; color:#3DE0FF">1146</span><span class="cap"> RPM</span></div>
+  </div>
+  <div class="abs cap" style="left:100px; top:2450px">Load history</div>
+  <div data-lc="chart" data-sensor="GPULOAD" data-step="6" data-color="#FF4FA3" data-fill-color="#FF4FA326" data-line-width="3"
+       class="abs" style="left:100px; top:2490px; width:900px; height:130px; border-bottom:2px solid #1A2840"></div>
+
+  <!-- ================= MEMORY ================= -->
+  <div class="panel amber" style="top:2700px; height:420px"></div>
+  <div class="abs amber" style="left:100px; top:2750px"><span class="tag" data-lc="label">MEMORY</span></div>
+
+  <div class="abs" style="left:100px; top:2830px; width:900px; display:flex; justify-content:space-between; align-items:baseline">
+    <span class="cap">System RAM</span>
+    <span><span data-lc="text" data-sensor="RAM_GB" style="font:400 48px 'Bahnschrift'">26.8</span><span class="unit"> / </span><span data-lc="text" data-sensor="RAMTOTAL_GB" data-decimals="0" class="unit">63</span><span class="unit"> GB</span></span>
+  </div>
+  <div data-lc="bar" data-sensor="RAMLOAD" data-segments="40" data-gap="5" data-on="#FFB547" data-gradient="#FF4FA3" data-off="#2A1E10"
+       data-warn="90" data-sample="42" class="abs" style="left:100px; top:2900px; width:900px; height:44px"></div>
+
+  <div class="abs" style="left:100px; top:2975px; width:900px; display:flex; justify-content:space-between; align-items:baseline">
+    <span class="cap">GPU VRAM</span>
+    <span><span data-lc="text" data-sensor="GPURAMLOAD" style="font:400 48px 'Bahnschrift'">45</span><span class="unit"> %</span></span>
+  </div>
+  <div data-lc="bar" data-sensor="GPURAMLOAD" data-segments="40" data-gap="5" data-on="#FF4FA3" data-gradient="#B06CFF" data-off="#26102A"
+       data-sample="45" class="abs" style="left:100px; top:3045px; width:900px; height:44px"></div>
+
+  <!-- ================= NETWORK ================= -->
+  <!-- ends at 3650, well clear of the page dots (y 3790) -->
+  <div class="panel green" style="top:3160px; height:430px"></div>
+  <div class="abs green" style="left:100px; top:3210px"><span class="tag" data-lc="label">NETWORK</span></div>
+
+  <div class="abs" style="left:100px; top:3280px; width:420px">
+    <div class="cap">Download</div>
+    <div style="display:flex; align-items:baseline; gap:10px; margin-top:8px">
+      <span class="val" data-lc="text" data-sensor="DOWNSPEED" style="color:#5BFFB0">3</span><span class="unit">KB/s</span></div>
+  </div>
+  <div class="abs" style="left:560px; top:3280px; width:420px">
+    <div class="cap">Upload</div>
+    <div style="display:flex; align-items:baseline; gap:10px; margin-top:8px">
+      <span class="val" data-lc="text" data-sensor="UPSPEED" style="color:#3DE0FF">14</span><span class="unit">KB/s</span></div>
+  </div>
+  <div data-lc="chart" data-sensor="DOWNSPEED" data-max="auto" data-step="6" data-color="#5BFFB0" data-fill-color="#5BFFB020" data-line-width="3"
+       class="abs" style="left:100px; top:3410px; width:420px; height:120px; border-bottom:2px solid #1A2840"></div>
+  <div data-lc="chart" data-sensor="UPSPEED" data-max="auto" data-step="6" data-color="#3DE0FF" data-fill-color="#3DE0FF20" data-line-width="3"
+       class="abs" style="left:560px; top:3410px; width:420px; height:120px; border-bottom:2px solid #1A2840"></div>
+</div>
+<script src="../lc-live.js"></script>
+</body>
+</html>

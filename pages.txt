@@ -1,0 +1,8 @@
+# Rainmeter pages, in swipe order (designs in screens\). Swipe left = next page, right = previous.
+# default= is the page shown after installing and when Rainmeter starts (otherwise the first page).
+# After editing, run: powershell -ExecutionPolicy Bypass -File install-skin.ps1
+default=home.html
+weather.html
+home.html
+gaming.html
+music.html

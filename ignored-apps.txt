@@ -1,0 +1,79 @@
+# Apps the Hyte screen never treats as games, even fullscreen and busy (one exe per line).
+# Add one if it sends the screen to the gaming page. Changes apply when a page opens.
+claude.exe
+chrome.exe
+msedge.exe
+msedgewebview2.exe
+firefox.exe
+opera.exe
+brave.exe
+explorer.exe
+dwm.exe
+applicationframehost.exe
+searchhost.exe
+shellexperiencehost.exe
+startmenuexperiencehost.exe
+textinputhost.exe
+lockapp.exe
+systemsettings.exe
+discord.exe
+steam.exe
+steamwebhelper.exe
+epicgameslauncher.exe
+eadesktop.exe
+battle.net.exe
+galaxyclient.exe
+ubisoftconnect.exe
+xboxpcapp.exe
+code.exe
+windowsterminal.exe
+powershell.exe
+cmd.exe
+notepad.exe
+rainmeter.exe
+hwinfo64.exe
+l-connect 3.exe
+lconnect3.exe
+msiafterburner.exe
+obs64.exe
+spotify.exe
+vlc.exe
+nuvio.exe
+mpc-hc64.exe
+teams.exe
+zoom.exe
+ms-teams.exe
+slack.exe
+whatsapp.exe
+outlook.exe
+olk.exe
+winword.exe
+excel.exe
+powerpnt.exe
+onenote.exe
+acrobat.exe
+photoshop.exe
+blender.exe
+davinci resolve.exe
+premiere pro.exe
+wallpaper64.exe
+wallpaper32.exe
+webwallpaper32.exe
+webwallpaper64.exe
+ui32.exe
+wallpaperui.exe
+launcher32.exe
+launcher64.exe
+lively.exe
+livelywpf.exe
+nvidia overlay.exe
+nvidia app.exe
+nvcontainer.exe
+gamebar.exe
+gamebarftserver.exe
+overwolf.exe
+medal.exe
+signalrgb.exe
+icue.exe
+armourycrate.exe
+razer synapse 3.exe

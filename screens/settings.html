@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- Settings page: opened by the gear next to the page dots, not part of the swipe order.
+     Controls: data-lc="toggle" data-var=<setting> (on/off switch), data-lc="button" data-action="setting"
+     data-var=<setting> data-step/min/max (- and + buttons), data-action="done" (back to the page you came from),
+     data-sensor="SET_<setting>" (a setting's value), data-action="open" data-target="known|ignored|folder" (opens
+     known-games.txt / ignored-apps.txt in Notepad, or the ResMon folder in Explorer). The settings live in settings.inc (see build_skin.py). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ResMon - Settings</title>
+<style>
+  html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#04060B; cursor:none;
+               user-select:none; -webkit-user-select:none; touch-action:none; }
+  #stage { position:absolute; left:0; top:0; width:1100px; height:3840px; overflow:hidden;
+           font-family:'Bahnschrift', 'Segoe UI', sans-serif; color:#E8F1FF;
+           background:
+             radial-gradient(900px 700px at 50% 700px, #0E2A4A55, transparent 70%),
+             radial-gradient(900px 700px at 50% 1500px, #3A0E4A44, transparent 70%),
+             linear-gradient(180deg, #050812 0%, #04060B 100%); }
+  .abs { position:absolute; }
+  [data-lc="text"] { white-space:nowrap; letter-spacing:0; text-transform:none; }
+
+  .panel { position:absolute; left:50px; width:1000px; border-radius:28px;
+           background:linear-gradient(180deg,#0C1424E6,#080D18E6);
+           border:2px solid #1A2840; box-shadow:0 20px 60px #0008, inset 0 1px 0 #ffffff10; }
+  .panel::before { content:''; position:absolute; left:40px; right:40px; top:-2px; height:3px; border-radius:3px;
+                   background:linear-gradient(90deg,transparent,var(--acc),transparent); }
+  .cyan { --acc:#3DE0FF; } .pink { --acc:#FF4FA3; } .amber { --acc:#FFB547; } .green { --acc:#4CD98A; }
+  .pill  { position:absolute; width:210px; height:96px; border-radius:48px; box-sizing:border-box;
+           border:2px solid var(--acc); background:#0E1828; display:flex; align-items:center; justify-content:center;
+           font:500 42px 'Bahnschrift'; color:var(--acc); }
+  .city  { font:400 50px 'Bahnschrift'; color:#FFB547; line-height:1; }
+
+  .tag   { font:600 34px 'Bahnschrift'; letter-spacing:8px; color:var(--acc); }
+  .label { font:400 54px 'Bahnschrift'; color:#F4F8FF; line-height:1; }
+  .note  { font:300 32px 'Bahnschrift'; color:#6B7F9C; line-height:1; }
+  .divider { position:absolute; left:100px; width:900px; height:2px; background:#1A2840; }
+  .round { position:absolute; width:96px; height:96px; border-radius:50%; background:#0E1828; border:2px solid #1A2840;
+           box-sizing:border-box; display:flex; align-items:center; justify-content:center;
+           font:400 40px 'Segoe Fluent Icons'; color:#E8F1FF; }
+  .value { font:400 64px 'Bahnschrift'; color:#3DE0FF; line-height:1; }
+  .pct   { font:300 36px 'Bahnschrift'; color:#6B7F9C; line-height:1; }
+  .switch { position:absolute; width:150px; height:84px; border-radius:42px; background:#3A4A62; }
+</style>
+</head>
+<body>
+<div id="stage" data-width="1100" data-height="3840">
+
+  <!-- ================= HEADER ================= -->
+  <div class="abs" style="left:80px; top:60px; font:300 100px 'Bahnschrift'; line-height:1; color:#F4F8FF">Settings</div>
+  <div class="abs" style="left:800px; top:64px; width:220px; height:96px; border-radius:48px; background:#3DE0FF;
+       display:flex; align-items:center; justify-content:center; font:600 44px 'Bahnschrift'; color:#04060B">Done</div>
+  <div data-lc="button" data-action="done" class="abs" style="left:780px; top:44px; width:260px; height:136px"></div>
+
+  <!-- ================= LOOK ================= -->
+  <div class="panel cyan" style="top:220px; height:842px"></div>
+  <div class="abs cyan tag" style="left:100px; top:270px">LOOK</div>
+
+  <div class="abs label" style="left:100px; top:370px">Dark theme</div>
+  <div class="abs note" style="left:100px; top:442px">Off for light panels and dark text</div>
+  <div data-lc="toggle" data-var="DarkTheme" class="switch" style="left:850px; top:370px"></div>
+
+  <div class="divider" style="top:530px"></div>
+
+  <div class="abs label" style="left:100px; top:572px">See-through</div>
+  <div class="abs note" style="left:100px; top:644px">Show the wallpaper behind the pages</div>
+  <div data-lc="toggle" data-var="Transparency" class="switch" style="left:850px; top:572px"></div>
+
+  <div class="divider" style="top:732px"></div>
+  <div class="abs label" style="left:100px; top:774px">Background</div>
+  <div class="abs note" style="left:100px; top:846px">How solid the page is</div>
+  <div class="round" style="left:580px; top:766px">&#xE738;</div>
+  <div data-lc="button" data-action="setting" data-var="BgOpacity" data-step="-5" data-min="0" data-max="100"
+       class="abs" style="left:560px; top:746px; width:136px; height:136px"></div>
+  <span class="abs value" data-lc="text" data-sensor="SET_BgOpacity" data-align="right"
+        style="left:700px; top:782px; width:140px; text-align:right">25</span>
+  <span class="abs pct" style="left:846px; top:806px">%</span>
+  <div class="round" style="left:904px; top:766px">&#xE710;</div>
+  <div data-lc="button" data-action="setting" data-var="BgOpacity" data-step="5" data-min="0" data-max="100"
+       class="abs" style="left:884px; top:746px; width:136px; height:136px"></div>
+
+  <div class="divider" style="top:902px"></div>
+  <div class="abs label" style="left:100px; top:934px">Panels</div>
+  <div class="abs note" style="left:100px; top:1006px">How solid the panels are</div>
+  <div class="round" style="left:580px; top:926px">&#xE738;</div>
+  <div data-lc="button" data-action="setting" data-var="PanelOpacity" data-step="-5" data-min="0" data-max="100"
+       class="abs" style="left:560px; top:912px; width:136px; height:136px"></div>
+  <span class="abs value" data-lc="text" data-sensor="SET_PanelOpacity" data-align="right"
+        style="left:700px; top:942px; width:140px; text-align:right">80</span>
+  <span class="abs pct" style="left:846px; top:966px">%</span>
+  <div class="round" style="left:904px; top:926px">&#xE710;</div>
+  <div data-lc="button" data-action="setting" data-var="PanelOpacity" data-step="5" data-min="0" data-max="100"
+       class="abs" style="left:884px; top:912px; width:136px; height:136px"></div>
+
+  <!-- ================= REGION ================= -->
+  <div class="panel amber" style="top:1102px; height:1000px"></div>
+  <div class="abs amber tag" style="left:100px; top:1152px">REGION</div>
+
+  <div class="abs label" style="left:100px; top:1252px">12-hour clock</div>
+  <div class="abs note" style="left:100px; top:1324px">6:05 PM instead of 18:05</div>
+  <div data-lc="toggle" data-var="Clock12" class="switch" style="left:850px; top:1252px"></div>
+
+  <div class="divider" style="top:1382px"></div>
+  <div class="abs label" style="left:100px; top:1422px">Fahrenheit</div>
+  <div class="abs note" style="left:100px; top:1494px">°F for weather, CPU and GPU</div>
+  <div data-lc="toggle" data-var="TempF" class="switch" style="left:850px; top:1422px"></div>
+
+  <div class="divider" style="top:1552px"></div>
+  <div class="abs label" style="left:100px; top:1592px">Wind in mph</div>
+  <div class="abs note" style="left:100px; top:1664px">Instead of km/h</div>
+  <div data-lc="toggle" data-var="WindMph" class="switch" style="left:850px; top:1592px"></div>
+
+  <div class="divider" style="top:1722px"></div>
+  <div class="abs label" style="left:100px; top:1762px">Weather</div>
+  <div class="abs note" style="left:100px; top:1834px">For the Weather page</div>
+  <div class="round" style="left:470px; top:1746px">&#xE76B;</div>
+  <div data-lc="button" data-action="cycle" data-var="WxCity" data-dir="-1"
+       class="abs" style="left:450px; top:1726px; width:136px; height:136px"></div>
+  <span class="abs city" data-lc="text" data-sensor="SET_WxCity" data-align="center"
+        style="left:566px; top:1768px; width:338px; text-align:center">London</span>
+  <div class="round" style="left:904px; top:1746px">&#xE76C;</div>
+  <div data-lc="button" data-action="cycle" data-var="WxCity" data-dir="1"
+       class="abs" style="left:884px; top:1726px; width:136px; height:136px"></div>
+
+  <div class="divider" style="top:1892px"></div>
+  <div class="abs label" style="left:100px; top:1932px">Second clock</div>
+  <div class="abs note" style="left:100px; top:2004px">Tap a clock to see it</div>
+  <div class="round" style="left:470px; top:1916px">&#xE76B;</div>
+  <div data-lc="button" data-action="cycle" data-var="AltCity" data-dir="-1"
+       class="abs" style="left:450px; top:1896px; width:136px; height:136px"></div>
+  <span class="abs city" data-lc="text" data-sensor="SET_AltCity" data-align="center"
+        style="left:566px; top:1938px; width:338px; text-align:center">Buenos Aires</span>
+  <div class="round" style="left:904px; top:1916px">&#xE76C;</div>
+  <div data-lc="button" data-action="cycle" data-var="AltCity" data-dir="1"
+       class="abs" style="left:884px; top:1896px; width:136px; height:136px"></div>
+
+  <!-- ================= ANIMATIONS ================= -->
+  <div class="panel pink" style="top:2142px; height:620px"></div>
+  <div class="abs pink tag" style="left:100px; top:2192px">ANIMATIONS</div>
+
+  <div class="abs label" style="left:100px; top:2292px">Weather icons</div>
+  <div class="abs note" style="left:100px; top:2364px">Weather page: moving sun, clouds and rain</div>
+  <div data-lc="toggle" data-var="AnimWeather" class="switch" style="left:850px; top:2292px"></div>
+
+  <div class="divider" style="top:2432px"></div>
+  <div class="abs label" style="left:100px; top:2462px">Game controller</div>
+  <div class="abs note" style="left:100px; top:2534px">Gaming page: the idle banner's controller</div>
+  <div data-lc="toggle" data-var="AnimGaming" class="switch" style="left:850px; top:2462px"></div>
+
+  <div class="abs label" style="left:100px; top:2632px">Music spectrum</div>
+  <div class="abs note" style="left:100px; top:2704px">Music page: bars that follow the sound</div>
+  <div data-lc="toggle" data-var="AnimMusic" class="switch" style="left:850px; top:2632px"></div>
+
+  <div class="divider" style="top:2602px"></div>
+
+  <!-- ================= GAME DETECTION ================= -->
+  <div class="panel green" style="top:2802px; height:630px"></div>
+  <div class="abs green tag" style="left:100px; top:2852px">GAME DETECTION</div>
+
+  <div class="abs label" style="left:100px; top:2952px">GPU load</div>
+  <div class="abs note" style="left:100px; top:3024px">Fullscreen apps above this</div>
+  <div class="round" style="left:580px; top:2944px">&#xE738;</div>
+  <div data-lc="button" data-action="setting" data-var="GpuLoad" data-step="-5" data-min="0" data-max="100"
+       class="abs" style="left:560px; top:2930px; width:136px; height:136px"></div>
+  <span class="abs value" data-lc="text" data-sensor="SET_GpuLoad" data-align="right"
+        style="left:700px; top:2960px; width:140px; text-align:right">50</span>
+  <span class="abs pct" style="left:846px; top:2984px">%</span>
+  <div class="round" style="left:904px; top:2944px">&#xE710;</div>
+  <div data-lc="button" data-action="setting" data-var="GpuLoad" data-step="5" data-min="0" data-max="100"
+       class="abs" style="left:884px; top:2930px; width:136px; height:136px"></div>
+
+  <div class="divider" style="top:3092px"></div>
+  <div class="abs label" style="left:100px; top:3122px">Known games</div>
+  <div class="abs note" style="left:100px; top:3194px">Switch to the gaming page at once</div>
+  <div class="pill green" style="left:790px; top:3102px">Edit</div>
+  <div data-lc="button" data-action="open" data-target="known" class="abs" style="left:770px; top:3082px; width:250px; height:136px"></div>
+
+  <div class="divider" style="top:3262px"></div>
+  <div class="abs label" style="left:100px; top:3292px">Ignored apps</div>
+  <div class="abs note" style="left:100px; top:3364px">Never treated as games</div>
+  <div class="pill green" style="left:790px; top:3272px">Edit</div>
+  <div data-lc="button" data-action="open" data-target="ignored" class="abs" style="left:770px; top:3252px; width:250px; height:136px"></div>
+
+
+  <!-- ================= FILES ================= -->
+  <div class="panel cyan" style="top:3472px; height:300px"></div>
+  <div class="abs cyan tag" style="left:100px; top:3522px">FILES</div>
+
+  <div class="abs label" style="left:100px; top:3622px">ResMon folder</div>
+  <div class="abs note" style="left:100px; top:3694px">Settings, game lists, art and logs</div>
+  <div class="pill cyan" style="left:790px; top:3602px">Open</div>
+  <div data-lc="button" data-action="open" data-target="folder" class="abs" style="left:770px; top:3582px; width:250px; height:136px"></div>
+</div>
+<script src="../lc-live.js"></script>
+</body>
+</html>
