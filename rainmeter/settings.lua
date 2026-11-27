@@ -23,6 +23,7 @@ local function put(k, v)
 end
 
 function Initialize()
+  LOADEDAT = os.clock()
   FILE = SELF:GetOption('File')
   TOGGLES = SELF:GetOption('Toggles')
   -- Rainmeter reopens the page that was showing when it closed: if this is the first page loaded since Rainmeter
@@ -32,7 +33,8 @@ function Initialize()
   local h = io.open(f, 'r'); local seen = h and tonumber(h:read('*l') or '') or 0; if h then h:close() end
   if math.abs(started - seen) > 10 then
     h = io.open(f, 'w'); if h then h:write(started); h:close() end
-    Done()
+    -- not straight away: changing page while Rainmeter is still loading this one has crashed it (see game.lua)
+    LEAVE = true
     return
   end
   SKIN:Bang('!SetVariable', 'TempUnits', tempUnits())
@@ -88,4 +90,7 @@ function Done()
   SKIN:Bang('!ActivateConfig', SKIN:GetVariable('CURRENTCONFIG'), back .. '.ini')
 end
 
-function Update() return 0 end
+function Update()
+  if LEAVE and os.clock() - LOADEDAT >= 2 then LEAVE = false; Done() end
+  return 0
+end

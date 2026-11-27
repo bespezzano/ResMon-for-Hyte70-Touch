@@ -5,7 +5,7 @@
 -- ExitSeconds, the screen returns to the page you were on. Swiping away from an automatically opened gaming
 -- page dismisses it for that game until the game ends. Settings come from autoswitch.json (via the builder).
 local function readState()
-  local s = { ret = '', auto = '0', game = '', dismissed = '', last = '' }
+  local s = { ret = '', auto = '0', game = '', dismissed = '', last = '', closed = '', closedat = '0' }
   local f = io.open(STATE, 'r')
   if f then
     for line in f:lines() do local k, v = line:match('^(%w+)=(.*)$'); if k then s[k] = v end end
@@ -19,7 +19,7 @@ local function writeState(s)
   if s.last == nil then s.last = readState().last end
   local f = io.open(STATE, 'w')
   if f then
-    for _, k in ipairs({ 'ret', 'auto', 'game', 'dismissed', 'last' }) do f:write(k .. '=' .. (s[k] or '') .. '\n') end
+    for _, k in ipairs({ 'ret', 'auto', 'game', 'dismissed', 'last', 'closed', 'closedat' }) do f:write(k .. '=' .. (s[k] or '') .. '\n') end
     f:close()
   end
 end
@@ -75,7 +75,15 @@ function Initialize()
   FOLDERS = {}
   for d in SELF:GetOption('GameFolders', ''):gmatch('[^|]+') do FOLDERS[#FOLDERS + 1] = d:lower():gsub('/', '\\') end
   hot, cold, started = 0, 0, 0
+  LOADEDAT = os.clock()
 end
+
+-- Changing page swaps this skin for another one. Doing that from a page's first update, while Rainmeter is still
+-- loading it, has crashed Rainmeter (twice in a row: Home loaded and switched straight back to Gaming as a game
+-- closed; Gaming switched to Home as Rainmeter started), so a page waits until it has been loaded for SETTLE
+-- seconds before it switches. os.clock() is the time since Rainmeter started.
+local SETTLE = 2
+local function settled() return os.clock() - LOADEDAT >= SETTLE end
 
 local function runningKnown()
   if RUNFILE == '' then return nil end
@@ -155,6 +163,15 @@ local function notGame(p)
   return false
 end
 
+-- A game that has just closed is still reported for a moment (HWiNFO's PresentMon sensor and npwatch's running
+-- game lag behind its process), so the page the gaming page went back to would switch straight back to it, two
+-- page loads in a fraction of a second, which has crashed Rainmeter. For CLOSEDWAIT seconds after the gaming page
+-- saw it close, that game doesn't switch pages.
+local CLOSEDWAIT = 10
+local function justClosed(s, g)
+  return g ~= nil and g == s.closed and os.time() - (tonumber(s.closedat) or 0) < CLOSEDWAIT
+end
+
 -- Is a focused app that isn't a known game yet a game? Drawing frames isn't enough (video calls, players and
 -- launchers do too), so it also has to be installed in a game library folder (Steam, Epic, GOG, Xbox, ...), or
 -- fill its monitor (fullscreen or borderless) while the GPU is at least GpuLoad % busy. Returns the reason, or nil.
@@ -182,7 +199,7 @@ function Update()
   -- goes to the default page instead, unless a game had switched pages. Only once per Rainmeter run: the start
   -- time (now - os.clock(), the time since Rainmeter started) is remembered, so later page loads and swipes
   -- aren't affected.
-  if not CHECKEDSTART then
+  if not CHECKEDSTART and settled() then
     CHECKEDSTART = true
     local started = now - math.floor(os.clock())
     local f = io.open(STARTFILE, 'r')
@@ -209,6 +226,7 @@ function Update()
   -- the game the gaming page shows when you came here yourself: a known game, or a focused app that passes the same
   -- checks as auto-switching (not just any app drawing frames, e.g. a launcher's or wallpaper app's settings window)
   if THIS == GAMEPAGE then updateInfo(s, (game and (KNOWN[game] or newGame(game, load)) and game) or run) end
+  if not settled() then return hot end
 
   if THIS ~= GAMEPAGE then
     -- a dismissed game stays dismissed until it has been closed (or not focused) for EXIT seconds
@@ -216,6 +234,9 @@ function Update()
       if game == s.dismissed or run == s.dismissed then cold = 0 else cold = cold + 1 end
       if cold >= EXIT then s.dismissed = ''; writeState(s); cold = 0 end
     end
+    -- a game that has only just closed is ignored for a few seconds (see justClosed)
+    if justClosed(s, game) then game = nil end
+    if justClosed(s, run) then run = nil end
     -- a known game that's running switches at once, focused or not; others must be focused and look like a game
     local how
     if run and run ~= s.dismissed then game, how = run, 'known game running'
@@ -246,8 +267,10 @@ function Update()
     if game == s.game or run == s.game then cold = 0 else cold = cold + 1 end
     if cold >= EXIT or (gone or 0) >= 2 then
       local ret = (s.ret ~= '' and s.ret) or GAMEPAGE
-      log(string.format('%s -> %s: %s', GAMEPAGE, ret, (gone or 0) >= 2 and (s.game .. ' closed') or (s.game .. ' not drawing frames for ' .. EXIT .. ' s')))
-      writeState({ ret = '', auto = '0', game = '', dismissed = '' })
+      local closed = (gone or 0) >= 2
+      log(string.format('%s -> %s: %s', GAMEPAGE, ret, closed and (s.game .. ' closed') or (s.game .. ' not drawing frames for ' .. EXIT .. ' s')))
+      writeState({ ret = '', auto = '0', game = '', dismissed = '',
+                   closed = closed and s.game or '', closedat = closed and tostring(os.time()) or '0' })
       if ret ~= GAMEPAGE then SKIN:Bang('!ActivateConfig', SKIN:GetVariable('CURRENTCONFIG'), ret .. '.ini') end
     end
   else
@@ -259,8 +282,8 @@ function Update()
       if gone >= 2 then
         local ret = (s.last ~= '' and s.last ~= GAMEPAGE) and s.last or nil
         log(string.format('%s -> %s: %s closed', GAMEPAGE, ret or '(stay)', SEEN))
+        writeState({ ret = '', auto = '0', game = '', dismissed = '', closed = SEEN, closedat = tostring(os.time()) })
         SEEN = nil
-        writeState({ ret = '', auto = '0', game = '', dismissed = '' })
         if ret then SKIN:Bang('!ActivateConfig', SKIN:GetVariable('CURRENTCONFIG'), ret .. '.ini') end
       end
     end
