@@ -293,7 +293,8 @@ SETTING_DEFAULTS = [
     ("AnimWeather", "1", "animated weather icons"),
     ("AnimGaming", "1", "animated controller on the gaming page's idle banner"),
     ("AnimMusic", "1", "music page spectrum"),
-    ("TempF", "0", "temperatures in Fahrenheit (1) or Celsius (0): weather, CPU and GPU"),
+    ("TempF", "0", "weather temperatures in Fahrenheit (1) or Celsius (0)"),
+    ("SysTempF", "-1", "CPU and GPU temperatures in Fahrenheit (1) or Celsius (0); -1 follows TempF"),
     ("WindMph", "0", "weather page wind speed in mph (1) or km/h (0)"),
     ("Clock12", "0", "12-hour clock (1) or 24-hour (0); the 12-hour clock has no AM/PM, like a phone's lock screen"),
     ("AltCity", "Buenos Aires", "the city tapping the clock shows (one of CITIES in build_skin.py)"),
@@ -316,7 +317,12 @@ CITIES = [
     ("Tokyo", "Tokyo Standard Time"), ("Sydney", "AUS Eastern Standard Time"), ("Auckland", "New Zealand Standard Time"),
 ]
 _TZ = None
-CHOICES = {"AltCity": [c for c, _ in CITIES]}    # settings with named choices (the settings page's < > buttons)
+# CPU/GPU temperatures in °F (1) or °C (0): SysTempF, or TempF while SysTempF is -1 (settings from before it existed)
+SYS_TEMP_F = ("[mSysTempF]\nMeasure=Calc\nFormula=#SysTempF# < 0 ? #TempF# : #SysTempF#\nUpdateDivider=-1\n"
+              "RegExpSubstitute=1\nSubstitute=\"^1$\":\"°F\",\"^0$\":\"°C\"\n")
+CHOICES = {"AltCity": [c for c, _ in CITIES],   # settings with named choices (the settings page's < > buttons)
+           # temperatures (settings.lua turns the choice into TempF and SysTempF)
+           "TempUnits": ["Celsius", "°F weather", "Fahrenheit"]}
 COORDS = {}                                     # setting -> {choice: (lat, lon)}: also sets <setting>Lat / <setting>Lon
 
 
@@ -921,10 +927,15 @@ H={h - 1}
                 # the wind speed unit (settings: WindMph)
                 variables["windUnit0"], variables["windUnit1"] = "km/h", "mph"
                 src = "Text=[#windUnit[#WindMph]]\n"
-            elif key == "TEMP_UNIT":
-                # the temperature unit (settings: TempF)
+            elif key == "WX_TEMP_UNIT":
+                # the weather's temperature unit (settings: TempF)
                 variables["tempUnit0"], variables["tempUnit1"] = "°C", "°F"
                 src = "Text=[#tempUnit[#TempF]]\n"
+            elif key == "TEMP_UNIT":
+                # the CPU/GPU temperature unit (settings: SysTempF, or TempF while that's -1)
+                if not any(m_.startswith("[mSysTempF]") for m_ in measures):
+                    measures.append(SYS_TEMP_F)
+                src = "MeasureName=mSysTempF\n"
             elif key.startswith("WX_"):
                 weather.add(key)
                 src = f"Text=#{key}#\n"
@@ -934,6 +945,10 @@ H={h - 1}
             elif key.startswith("NP_"):
                 np_.setdefault(key, "")
                 src = f"Text=#{key}#\n"
+            elif key == "SET_TEMPUNITS":
+                # the temperature choice: settings.lua sets it from TempF and SysTempF
+                variables["TempUnits"] = CHOICES["TempUnits"][0]
+                src = "Text=#TempUnits#\n"
             elif key.startswith("SET_"):
                 # a setting's value (any page): the variable itself (settings.inc), e.g. SET_BgOpacity, SET_WxCity
                 src = f"Text=#{r['sensor'][4:]}#\n"
@@ -953,10 +968,12 @@ Substitute="^[^:]*:\\s*([^:]+?)\\s*(:.*)?$":"\\1"
             else:
                 mv = need(key)
                 if key.endswith("TEMP") or key == "GPUHOTSPOT":
-                    # a temperature (HWiNFO gives °C): the text shows it in °F while TempF is on; warnings and arcs
-                    # keep using the °C value
+                    # a temperature (HWiNFO gives °C): the text shows it in °F while mSysTempF is 1; warnings and
+                    # arcs keep using the °C value
+                    if not any(m_.startswith("[mSysTempF]") for m_ in measures):
+                        measures.append(SYS_TEMP_F)
                     if not any(m_.startswith(f"[{mv}_t]") for m_ in measures):
-                        measures.append(f"[{mv}_t]\nMeasure=Calc\nFormula=#TempF# = 1 ? {mv} * 1.8 + 32 : {mv}\n")
+                        measures.append(f"[{mv}_t]\nMeasure=Calc\nFormula=mSysTempF = 1 ? {mv} * 1.8 + 32 : {mv}\n")
                     mv += "_t"
                 src = f"MeasureName={mv}\nNumOfDecimals={int(r.get('decimals') or DEC.get(key, 0))}\n"
                 d = {"warn": r.get("warn"), "warnColor": r.get("warnColor")}

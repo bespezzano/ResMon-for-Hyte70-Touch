@@ -98,9 +98,11 @@ came from. It has:
   background as it loads. It's a pixel larger than the page, because the display's size in Rainmeter's scaled
   pixels isn't always whole (at 150 % scaling, 1100 / 1.5 = 733.3) and the last fraction of a pixel would otherwise
   show the wallpaper.
-- **Fahrenheit** (`TempF`): the weather (`wx.lua` converts the forecast) and the CPU/GPU temperatures in °F. A
-  sensor temperature's text goes through a Calc measure (`v_<KEY>_t`); its warning colour and arc keep using °C.
-  The unit labels are `data-sensor="TEMP_UNIT"` text, so they switch between °C and °F.
+- **Temperature** (`TempF`, `SysTempF`): Celsius, °F weather (the weather in °F, CPU/GPU still in °C) or Fahrenheit
+  (everything in °F). The < > choice sets two settings: `TempF` for the weather (`wx.lua` converts the forecast) and
+  `SysTempF` for the CPU/GPU temperatures (`-1`, in settings from before it existed, follows `TempF`). A sensor
+  temperature's text goes through a Calc measure (`v_<KEY>_t`, using `mSysTempF`); its warning colour and arc keep
+  using °C. The unit labels are `data-sensor="TEMP_UNIT"` (CPU/GPU) and `data-sensor="WX_TEMP_UNIT"` (weather) text.
 - **Wind in mph** (`WindMph`): the weather page's wind speed in mph instead of km/h (`wx.lua` converts it;
   the unit label is `data-sensor="WIND_UNIT"` text).
 - **12-hour clock** (`Clock12`): every page's clock and the second clock show 6:05 instead of 18:05, with a small

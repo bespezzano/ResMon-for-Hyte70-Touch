@@ -35,6 +35,7 @@ function Initialize()
     Done()
     return
   end
+  SKIN:Bang('!SetVariable', 'TempUnits', tempUnits())
   paint()
 end
 
@@ -46,6 +47,20 @@ end
 
 function Step(k, d, lo, hi) put(k, math.max(lo, math.min(hi, get(k) + d))) end
 
+-- the temperature choice (TempUnits, not saved; Choices_TempUnits: Celsius | F weather | Fahrenheit) and the two
+-- settings each stands for: TempF (weather) and SysTempF (CPU/GPU; -1, from settings saved before it existed,
+-- follows TempF)
+local TEMPS = { { 0, 0 }, { 1, 0 }, { 1, 1 } }
+function tempUnits()
+  local list = {}
+  for c in SELF:GetOption('Choices_TempUnits'):gmatch('[^|]+') do list[#list + 1] = c end
+  local w = get('TempF') == 1 and 1 or 0
+  local sys = tonumber(SKIN:GetVariable('SysTempF') or '') or -1
+  if sys < 0 then sys = w end
+  for i, t in ipairs(TEMPS) do if t[1] == w and t[2] == sys then return list[i] or '' end end
+  return list[1] or ''
+end
+
 -- a setting with named choices (option Choices_<k>: "A|B|C"): the next (d = 1) or previous (d = -1), wrapping round
 function Cycle(k, d)
   local list = {}
@@ -54,6 +69,12 @@ function Cycle(k, d)
   local cur, at = SKIN:GetVariable(k), 0
   for i, c in ipairs(list) do if c == cur then at = i end end
   local pick = list[(at - 1 + d) % #list + 1]
+  if k == 'TempUnits' then
+    local t = TEMPS[(at - 1 + d) % #list + 1]
+    SKIN:Bang('!SetVariable', k, pick)
+    put('TempF', t[1]); put('SysTempF', t[2])
+    return
+  end
   put(k, pick)
   -- a place (option Coords_<k>: "Name=lat,lon|..."): also save its coordinates as <k>Lat / <k>Lon
   for name, lat, lon in SELF:GetOption('Coords_' .. k):gmatch('([^|=]+)=([^,|]+),([^|]+)') do
